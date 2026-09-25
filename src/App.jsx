@@ -1,4 +1,5 @@
 import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import Bitacoras from "./Bitacoras";
 
 const services = [
   [
@@ -21,6 +22,29 @@ const services = [
 
 
 export default function App() {
+  // Mantiene la misma ruta para que también funcione al recargar en GitHub Pages.
+  const rutaInicio = window.location.pathname;
+  const esBitacoras = new URLSearchParams(window.location.search).get("herramienta") === "bitacoras";
+
+  if (esBitacoras) {
+    return (
+      <main>
+        <header
+          className="wrap header"
+          style={{ flexWrap: "wrap", gap: "20px" }}
+        >
+          <a className="brand" href={rutaInicio}>
+            <b>T.</b> Trejo<span>Tech</span>
+          </a>
+          <a href={`${rutaInicio}#herramientas`}>
+            ← Volver a TrejoTech
+          </a>
+        </header>
+        <Bitacoras />
+      </main>
+    );
+  }
+
   return (
     <main>
       <header className="wrap header">
@@ -138,9 +162,10 @@ export default function App() {
 
             <a
               className="button"
-              href=""
+              href={`${rutaInicio}?herramienta=bitacoras`}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Abrir herramienta de bitácoras en una nueva pestaña"
             >
               Abrir herramienta ↗
             </a>
