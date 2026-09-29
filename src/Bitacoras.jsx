@@ -98,7 +98,8 @@ export function generarTexto(tipo, datos) {
   if (instalacion || cambioFo || cambioOnu || alineacion) seccion("MATERIAL", [
     ["inicioFo", "Inicio FO"], ["finFo", "Fin FO"], ["totalFo", "Total de FO (metros)"],
     ["tensores", "Tensores"], ["rosetas", "Rosetas"], ["jumper", "Jumper APC/APC"],
-    ["grapasFo", "Grapas FO"], ["grapasUtp", "Grapas UTP"],
+    ["grapasFo", "Grapas FO"], ["grapasUtp", "Grapas UTP"],["conectoresMecanicos", "Conectores mecánicos (piezas)"],
+["onus", "ONU (piezas)"],["etiquetasMaterial", "Etiquetas (piezas)"],["onuCatv", "ONU CATV (piezas)"],
     ...(cambioFo ? [] : [
       ["cableCoaxial", "Cable coaxial (metros)"], ["conectorCoaxial", "Conector coaxial"],
       ["miniNodo", "Mini nodo"],
@@ -610,6 +611,11 @@ export default function Bitacoras() {
                   ["jumper", "Jumper APC/APC"],
                   ["grapasFo", "Grapas FO"],
                   ["grapasUtp", "Grapas UTP"],
+                  ["conectoresMecanicos", "Conectores mecánicos (piezas)"],
+                  ["onus", "ONU (piezas)"],
+                  ["etiquetasMaterial", "Etiquetas (piezas)"],
+                  ["onuCatv", "ONU CATV (piezas)"],
+
                   ...(tipo === "Cambio a fibra óptica"
                     ? []
                     : [
