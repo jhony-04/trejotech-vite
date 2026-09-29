@@ -1,0 +1,33 @@
+#bitacoras .offline-info,
+#bitacoras .borrador-info {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #ceddfa;
+  border-radius: 12px;
+  background: #eaf1ff;
+  color: #153661;
+  line-height: 1.5;
+}
+
+#bitacoras .offline-info p,
+#bitacoras .borrador-info p {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+#bitacoras .borrador-info small {
+  display: block;
+  font-size: 13px;
+}
+
+#bitacoras .borrador-info button {
+  display: block;
+  margin-top: 14px;
+  padding: 10px 16px;
+  border: 1px solid #1959d1;
+  border-radius: 8px;
+  background: white;
+  color: #1959d1;
+  font: inherit;
+  cursor: pointer;
+}

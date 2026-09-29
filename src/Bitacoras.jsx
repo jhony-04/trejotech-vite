@@ -1,5 +1,8 @@
 import "./Bitacoras.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import EstadoOffline from "./EstadoOffline";
+import "./Offline.css";
 
 const tiposDeServicio = [
   "Instalación de fibra óptica",
@@ -123,7 +126,66 @@ export function generarTexto(tipo, datos) {
 }
 
 export default function Bitacoras() {
-  const [tipo, setTipo] = useState("");
+  const [tipo, setTipo] = useState(() => {
+    try {
+      const anterior = localStorage.getItem("trejotech.ultimo-servicio.v1");
+      return tiposDeServicio.includes(anterior) ? anterior : "";
+    } catch {
+      return "";
+    }
+  });
+  const formularioRef = useRef(null);
+  const [estadoBorrador, setEstadoBorrador] = useState("");
+  const claveBorrador = `trejotech.borrador.v1.${tipo}`;
+
+  useEffect(() => {
+    if (!tipo || !formularioRef.current) return;
+    try {
+      localStorage.setItem("trejotech.ultimo-servicio.v1", tipo);
+      const guardado = localStorage.getItem(claveBorrador);
+      if (!guardado) {
+        setEstadoBorrador("Los cambios se guardarán en este navegador.");
+        return;
+      }
+      const borrador = JSON.parse(guardado);
+      if (borrador.version !== 1 || !borrador.datos ||
+          typeof borrador.datos !== "object" || Array.isArray(borrador.datos)) {
+        throw new Error("Borrador inválido");
+      }
+      for (const campo of formularioRef.current.elements) {
+        if (campo.name && typeof borrador.datos[campo.name] === "string") {
+          campo.value = borrador.datos[campo.name];
+        }
+      }
+      setEstadoBorrador("Borrador recuperado. Puedes continuar llenándolo.");
+    } catch {
+      setEstadoBorrador("No se pudo recuperar el borrador. Genera y copia tu bitácora antes de salir.");
+    }
+  }, [tipo, claveBorrador]);
+
+  function guardarBorrador(event) {
+    invalidarTexto();
+    const datos = Object.fromEntries(new FormData(event.currentTarget));
+    try {
+      localStorage.setItem(claveBorrador, JSON.stringify({ version: 1, datos }));
+      setEstadoBorrador("Borrador guardado en este navegador.");
+    } catch {
+      setEstadoBorrador("No se pudo guardar. Genera y copia tu bitácora antes de salir.");
+    }
+  }
+
+  function nuevaBitacora() {
+    if (!window.confirm("¿Borrar los datos de este servicio y comenzar una nueva bitácora?")) return;
+    try {
+      localStorage.removeItem(claveBorrador);
+    } catch {
+      setEstadoBorrador("No se pudo borrar el borrador. Los datos se conservaron.");
+      return;
+    }
+    formularioRef.current?.reset();
+    invalidarTexto();
+    setEstadoBorrador("Formulario limpio. Puedes comenzar una nueva bitácora.");
+  }
   const [texto, setTexto] = useState("");
   const [mensaje, setMensaje] = useState("");
   const salidaRef = useRef(null);
@@ -159,6 +221,8 @@ export default function Bitacoras() {
 
       <h2>Bitácoras de campo</h2>
 
+      <EstadoOffline />
+
       <p>
         Selecciona el servicio para comenzar tu bitácora.
       </p>
@@ -188,7 +252,20 @@ export default function Bitacoras() {
         <div>
           <h2 className="bitacoras-service-title">{tipo}</h2>
 
-          <form onSubmit={generar} onChange={invalidarTexto}>
+          <div className="borrador-info">
+            <p role="status">{estadoBorrador}</p>
+            <small>Un borrador por servicio, solo en este navegador. Borrar sus datos elimina los borradores.</small>
+            <button type="button" onClick={nuevaBitacora}>
+              Nueva bitácora
+            </button>
+          </div>
+
+          <form
+            key={tipo}
+            ref={formularioRef}
+            onSubmit={generar}
+            onChange={guardarBorrador}
+          >
             <label>
               Fecha de solicitud
               <input
